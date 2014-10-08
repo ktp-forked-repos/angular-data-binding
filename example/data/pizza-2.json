@@ -1,0 +1,13 @@
+{
+    "name": "The Meat Monster",
+    "vegetarian": "No",
+    "price": 12,
+    "ingredients": [
+        "Tomato sauce",
+        "BBQ Chicken",
+        "Pepperoni",
+        "Beef mince",
+        "Spicy sausage",
+        "Chorizo"
+    ]
+}

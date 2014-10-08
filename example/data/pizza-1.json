@@ -1,0 +1,10 @@
+{
+    "name": "Margarita",
+    "vegetarian": "Yes",
+    "price": 6,
+    "ingredients": [
+        "Tomato sauce",
+        "Mozzarella",
+        "Basil"
+    ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "angular-data-binding",
+  "version": "1.0.0",
+  "description": "A presentation about angularJS data binding, made with reveal.js",
+  "author": {
+    "name": "Thomas Roch",
+    "email": "thomas.c.roch@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/troch/angular-data-binding.git"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-connect": "~0.4.1"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/hakimel/reveal.js/blob/master/LICENSE"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+<h1 class="ui header" bind-now="pizza.name"></h1>
+
+<div class="ui list">
+    <div class="list">
+        <div class="item">
+            <div class="content">
+                <a class="header">Name</a>
+                <div class="description" bind-now="pizza.name"></div>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="content">
+                <a class="header">Vegetarian</a>
+                <div class="description" bind-now="pizza.vegetarian"></div>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="content">
+                <a class="header">Ingredients</a>
+                <div class="description" bind-now="pizza.ingredients.join(', ')"></div>
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="content">
+                <a class="header">Price</a>
+                <div class="description" bind-now="pizza.price | currency:'£'"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui divider"></div>
+<strong>Number of watchers: <span ng-bind="$$watchers.length - 1"></span></strong>

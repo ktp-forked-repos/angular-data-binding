@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Angular data binding</title>
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="assets/reveal.min.css">
+        <link rel="stylesheet" href="assets/solarized.css" id="theme">
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="assets/zenburn.css">
+
+        <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+        <script>
+            if( window.location.search.match( /print-pdf/gi ) ) {
+                var link = document.createElement( 'link' );
+                link.rel = 'stylesheet';
+                link.type = 'text/css';
+                link.href = 'assets/pdf.css';
+                document.getElementsByTagName( 'head' )[0].appendChild( link );
+            }
+        </script>
+    </head>
+
+    <body>
+
+        <div class="reveal">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+                <section>
+                    <h1>Data binding in AngularJS</h1>
+                    <h3>From model to view</h3>
+
+                    <img src="images/angularjs-logo-trans.png" class="no-border" /><br/>
+
+                    <small>Thomas Roch, Formedix Ltd</small>
+                    <aside class="notes">
+                        Hello, my name is, I work for<br/>
+                        We develop Applications using AngularJS for the front-end part. We are trying to make them solid,
+                        fast and scalable. That leads us to make the most of what Angular can offer, and today I'd like to talk
+                        about one of the most important feature in Angular: data binding.
+                    </aside>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Types of data binding</h2>
+
+                        <ul>
+                            <li>One way (model to view)</li>
+                            <li>Two-way data binding</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3>From view to model</h3>
+
+                        <ul>
+                            <li>Javascript DOM <strong>Event</strong> model: Event, KeyboardEvent, MouseEvent...</li>
+                            <li class="fragment">Easy to <strong>bind</strong> model to view in Angular directives</li>
+                        </ul>
+
+<pre  class="fragment"><code class="javascript hljs">
+app.directive('input', function () {
+    return {
+        restrict: 'E',
+        scope: false,
+        link: function (scope, element, attrs) {
+            element.bind('input', function (event) {
+                scope.$apply(function () {
+                    scope.model = element.val();
+                });
+            });
+        }
+    };
+});
+</code></pre>
+                    </section>
+
+                    <section>
+                        <h3>From model to view</h3>
+
+                        <ul>
+                            <li>No events or notifications fired when a value changes in EcmaScript 5</li>
+                            <li class="fragment">Observers are for the future (EcmaScript 6)</li>
+                        </ul>
+
+<pre class="fragment"><code class="javascript hljs">
+Object.observe(myObj, function observer(changes) {
+    /* Do something */
+    changes.forEach(function (change) {
+        console.log(change.name, change.type, change.oldValue);
+    });
+});
+</code></pre>
+                        <br/><h3 class="fragment">A way to overcome this: <strong>dirty checking</strong></h3>
+
+                        <aside class="notes">
+                            Observers can listen to: change of property value, addition or deletion of property value...<br/>
+                            Notifiers can also be used to emit custom event types<br/>
+                            <strong>What is dirty checking?</strong>
+                            A digest process needs to run everytime something has changed or could have changed:<br/>
+                            - goes through the existing bindings<br/>
+                            - checks if the current model value and the last model value in the binding are still the same<br/>
+                            - Update if not
+                        </aside>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Watchers</h2>
+
+<pre><code class="javascript hljs">
+// Object.observe(myObj, function observer(changes) {
+//     changes.forEach(function (change) {
+//         console.log(change.name, change.type, change.oldValue);
+//     });
+// });
+
+$scope.$watch(watchExpression, function listener(newValue, oldValue) {
+    // Do something
+    console.log(newValue, oldValue);
+});
+</code></pre>
+
+                        <ul class="fragment">
+                            <li><strong>watchExpression</strong> can be an expression (string)<br/>It is evaluated in the context of the $scope using $parse</li>
+                            <li class="fragment">Or it can be a function returning a value</li>
+                            <li class="fragment">Watched values can be primitives, array or objects</li>
+                            <li class="fragment">The <strong>listener</strong> function is executed if the <strong>watchExpression</strong> result has changed since the last check.</li>
+                            <li class="fragment">$scope.$watch() returns a deregistration function</li>
+                        </ul>
+
+                        <aside class="notes">
+                            - It is evaluated with $parse => convert to a function
+                            This is some difference between proper observers and dirty checking:<br/>
+                            - With observers, every single value change will trigger the observer function<br/>
+                            - Dirty checking is a discrete process where values are sampled and check at each dirty check.
+                              If the value changes more than once between two dirty checks, it is simply missed.
+                        </aside>
+                    </section>
+
+                    <section>
+                        <h3>Watching depths</h3>
+
+                        <ul>
+                            <li><strong>$scope.$watch(watchExpr, listener)</strong>
+                                <br/>for watching primitives or object references<br/><small>&nbsp;</small></li>
+
+                            <li><strong>$scope.$watchCollection(watchExpr, listener)</strong>
+                                <br/>for watching additions and deletions in Arrays<br/><small>&nbsp;</small></li>
+
+                            <li><strong>$scope.$watch(watchExpr, listener, true)</strong>
+                                <br/>for objects and arrays equality (using angular.equals)<br/><small>&nbsp;</small></li>
+                        </ul>
+
+                        <aside class="notes">
+                            - A normal watch compares variables using === (which is by reference for variables of type "object")<br/>
+                            - Demo in console<br/>
+                            - Watching for objects and arrays equality is more resource demanding
+                        </aside>
+                    </section>
+
+                    <section>
+                        <img src="images/angular_watch_depths.png" /><br />
+
+                        <small>Credits: Tero Parviainen, <a href="http://teropa.info/blog/2014/01/26/the-three-watch-depths-of-angularjs.html">http://teropa.info/blog/2014/01/26/the-three-watch-depths-of-angularjs.html</a></small>
+                    </section>
+
+                    <section>
+                        <h3>Which directives add watchers?</h3>
+
+                        <ul>
+                            <li><strong>$watch:</strong><br/>
+                                {{ }}, ngBind, ngBindTemplate, ngModel<br/>
+                                ngShow, ngHide, ngIf, ngSwitch<br/>
+                                ngSelected, ngChecked, ngDisabled, ngRequired, etc...</li>
+
+                            <li><strong>$watchCollection:</strong><br/>
+                                ngRepeat</li>
+
+                            <li><strong>$watch with object equality:</strong><br/>
+                                ngClass, ngStyle</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>The digest process</h2>
+
+                        <ul>
+                            <li>$scope.$digest() digests a scope and its children</li>
+                            <li class="fragment">Cannot run concurently</li>
+                            <li class="fragment">Evaluates all watch expressions and functions</li>
+                            <li class="fragment">If at least one listener is fired, it will re-evaluate all watch expressions</li>
+                            <li class="fragment">The digest process stops when no more listeners have been fired</li>
+                            <li class="fragment">Stops at 10 times and throws an infinite digest loop</li>
+                        </ul>
+
+                        <aside class="notes">
+                            - A watch expression can be fired multiple times per digest<br/>
+                            - A digest is about propagating changes, you can compoare it to a brick in a pond<br/>
+                            - That error you probably saw more than once
+                        </aside>
+                    </section>
+
+                    <section>
+                        <h3>What triggers a digest?</h3>
+
+                        <ul>
+                            <li>$digest usually not called directly
+<pre><code class="javascript hljs">
+// Apply changes: execute function and call $digest
+$scope.$apply(function () {
+    $scope.myModel = 'Hello';
+});
+</code></pre>
+                            </li>
+                            <li>Services: $http, $timeout, $interval</li>
+                            <li>Directives: ngClick, ngChange, ngFocus, ngPaste, etc...</li>
+                            <li>When inside a watch listener, no need to trigger a digest!</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Issue #1: performance</h2>
+
+                        <blockquote>To measure performance improvements we have created a crude benchmark of a
+table of 20 columns (a repeater) and 100 rows (another repeater) and placed
+a binding in each cell for a total of 2000 cells. We then proceeded to
+change a small portion of the model to see the performance characteristics
+of the update. The result is summarized below.</blockquote>
+                        <ul>
+                            <li>Dirty checking: 40ms</li>
+                            <li>Observers: 1-2ms</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2>Issue #2: Sustainability</h2>
+
+                        <ul>
+                            <li>The more the watchers, the more processing required</li>
+                            <li>The more processing, the more time it takes</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h2>Solution</h2>
+
+                        <ul>
+                            <li>Limiting the number of watchers!</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Scopes and data</h2>
+
+                        <ul>
+                            <li>A variable can be available when the scope is instanciated: use of resolve, or synchronous initialisation</li>
+                            <li class="fragment">A variable can be available after the scope is instanciated: fetching data asynchronously</li>
+                            <li class="fragment">A variable can be changing multiple times during a scope's life</li>
+                        </ul>
+
+                        <aside class="notes">
+                            - We have talked about watchers<br/>
+                            - We have talked about the digest process</br>
+                            - Let's now talk about the context where all of this happens: scopes
+                        </aside>
+                    </section>
+
+                    <section>
+                        <h3>The three cases of watching data</h3>
+
+                        <ul>
+                            <strong>A watcher is watching...</strong>
+                            <li class="fragment">data available at scope creation which will never change</li>
+                            <li class="fragment">data available after scope creation which will never change thereafter</li>
+                            <li class="fragment">data available immediately or not, which will change once or more</li>
+                        </ul>
+
+                        <aside class="notes">
+                            - Angular directives with watchers make no assumption about your data: they work for the worst case: your data can change at any time
+                        </aside>
+                    </section>
+
+                    <section>
+                        <h3>Demo</h3>
+                    </section>
+                </section>
+
+                <section>
+                    <h1>Questions</h1>
+                </section>
+            </div>
+        </div>
+
+        <script src="assets/head.min.js"></script>
+        <script src="assets/reveal.min.js"></script>
+
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+                // Parallax scrolling
+                // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+                // parallaxBackgroundSize: '2100px 900px',
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    // { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    // { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    // { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'assets/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    // { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'assets/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>

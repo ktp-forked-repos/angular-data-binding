@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="assets/semantic.min.css">
+        <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+
+        <script src="assets/angular.min.js"></script>
+        <script src="assets/angular-route.min.js"></script>
+        <script src="assets/demo.js"></script>
+        <style>
+            html {
+                font-family: 'Source Sans Pro';
+                color: #444;
+            }
+        </style>
+    </head>
+
+    <body ng-app="gjs">
+
+        <div class="ui grid">
+            <div class="five wide column">
+                <h4 class="ui header">No watch</h4>
+
+                <div class="ui vertical menu">
+                    <a href="#/pizza/sync/1" class="item teal item" ng-class="{active: $location.path().indexOf('/sync/1') > 0}">Pizza Margarita</a>
+
+                    <a href="#/pizza/sync/2" class="item teal item" ng-class="{active: $location.path().indexOf('/sync/2') > 0}">The Meat Monster</a>
+                </div>
+
+                <h4 class="ui header">Watch once</h4>
+
+                <div class="ui vertical menu">
+                    <a href="#/pizza/async/1" class="item teal item" ng-class="{active: $location.path().indexOf('/async/1') > 0}">Pizza Margarita</a>
+
+                    <a href="#/pizza/async/2" class="item teal item" ng-class="{active: $location.path().indexOf('/async/2') > 0}">The Meat Monster</a>
+                </div>
+            </div>
+
+            <div class="eight wide column">
+                <ng-view></ng-view>
+            </div>
+        </div>
+
+    </body>
+
+</html>
